@@ -3,7 +3,6 @@ import torch.nn as nn
 from segformer import *
 from typing import Tuple
 from einops import rearrange
-
 class PatchExpand(nn.Module):
     def __init__(self, input_resolution, dim, dim_scale=2, norm_layer=nn.LayerNorm):
         super().__init__()
