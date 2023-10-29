@@ -4,10 +4,10 @@ import torch.nn as nn
 import einops
 from timm.models.layers import to_2tuple
 
-from DeformableAttention import DAttentionBaseline, LayerNormProxy
-from DeformableAttentionTransformer import DATMiss
-from segformer import MixFFN,MixFFN_skip, MLP_FFN
-from MISSFormer import PatchExpand, FinalPatchExpand_X4
+from .DeformableAttention import DAttentionBaseline, LayerNormProxy
+from .DeformableAttentionTransformer import DATMiss
+from .segformer import MixFFN,MixFFN_skip, MLP_FFN
+from .MISSFormer import PatchExpand, FinalPatchExpand_X4
 
 
 

@@ -16,8 +16,8 @@ import torch.nn.functional as F
 from timm.models.layers import DropPath, to_2tuple
 
 
-from DeformableAttention import LayerNormProxy, TransformerMLPWithConv, DAttentionBaseline
-from segformer import MixFFN_skip
+from .DeformableAttention import LayerNormProxy, TransformerMLPWithConv, DAttentionBaseline
+from .segformer import MixFFN_skip
 
 #from .slide import SlideAttention
 #from .dat_blocks import *
