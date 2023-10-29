@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from .segformer import *
+from segformer import *
 from typing import Tuple
 from einops import rearrange
 
