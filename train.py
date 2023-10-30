@@ -18,7 +18,7 @@ parser.add_argument('--root_path', type=str,
 parser.add_argument('--dataset', type=str,
                     default='Synapse', help='experiment_name')
 parser.add_argument('--list_dir', type=str,
-                    default='./lists/lists_Synapse', help='list dir')
+                    default='.deeplearning/sina/MISSFormerV2/lists/lists_Synapse', help='list dir')
 parser.add_argument('--model_type', type=str,
                     default='missformerv2', help='Choose your model type')
 parser.add_argument('--num_classes', type=int,
