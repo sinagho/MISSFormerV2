@@ -18,7 +18,7 @@ parser.add_argument('--root_path', type=str,
 parser.add_argument('--dataset', type=str,
                     default='Synapse', help='experiment_name')
 parser.add_argument('--list_dir', type=str,
-                    default='.deeplearning/sina/MISSFormerV2/lists/lists_Synapse', help='list dir')
+                    default='deeplearning/sina/MISSFormerV2/lists/lists_Synapse', help='list dir')
 
 parser.add_argument('--model_type', type=str,
                     default='missformerv2', help='Choose your model type')
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     dataset_config = {
         'Synapse': {
             'root_path': args.root_path,
-            'list_dir': '.deeplearning/sina/MISSFormerV2/lists/lists_Synapse',
+            'list_dir': 'deeplearning/sina/MISSFormerV2/lists/lists_Synapse',
             'num_classes': 9,
         },
     }
