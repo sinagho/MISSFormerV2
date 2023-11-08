@@ -5,7 +5,7 @@ import einops
 from timm.models.layers import to_2tuple
 
 from .DeformableAttention import DAttentionBaseline, LayerNormProxy
-from .DeformableAttentionTransformer import DATMiss
+from .DeformableAttentionTransformer import DATMiss, DATMiss2
 from .segformer import MixFFN,MixFFN_skip, MLP_FFN
 from .MISSFormer import PatchExpand, FinalPatchExpand_X4
 
@@ -162,7 +162,7 @@ class MyDecoderLayer(nn.Module):
           out = out.view(out.size(0),  out.size(2), out.size(1)//(h*2), out.size(1)//(w*2))
         return out
 
-class MISSFormer2(nn.Module):
+class MISSFormer3(nn.Module):
     def __init__(self, num_classes=9, encoder_pretrained=True):
         super().__init__()
 
@@ -176,7 +176,7 @@ class MISSFormer2(nn.Module):
 
         #dims, layers = [[64, 128, 320, 512], [2, 2, 2, 2]]
 
-        self.backbone = DATMiss(img_size=224, patch_size=4, expansion=4,dim_stem = 96,
+        self.backbone = DATMiss2(img_size=56, patch_size=4, expansion=4,dim_stem = 96,
                                 dims=[96, 192, 384, 768], depths=[2,2,2,2],
                                 heads=[3,6,12,24], window_sizes=[7,7,7,7],
                                 drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.0,
@@ -204,68 +204,47 @@ class MISSFormer2(nn.Module):
         self.decoder_4= MyDecoderLayer((d_base_feat_size,d_base_feat_size), in_out_chan[3], heads[3], n_groups[0],n_class=num_classes, is_first= True)
         self.decoder_3= MyDecoderLayer((d_base_feat_size*2,d_base_feat_size*2),in_out_chan[2], heads[2], n_groups[1], n_class=num_classes)
         self.decoder_2= MyDecoderLayer((d_base_feat_size*4,d_base_feat_size*4), in_out_chan[1], heads[1], n_groups[2], n_class=num_classes)
-        self.decoder_1= MyDecoderLayer((d_base_feat_size*8,d_base_feat_size*8), in_out_chan[0], heads[0], n_groups[3], n_class=num_classes, is_last=True)
-
+        #self.decoder_1= MyDecoderLayer((d_base_feat_size*8,d_base_feat_size*8), in_out_chan[0], heads[0], n_groups[3], n_class=num_classes, is_last=True)
+        self.decoder_1 = MyDecoderLayer((14, 14), in_out_chan[0], heads[0], n_groups[3], n_class=num_classes, is_last=True)
 
     def forward(self, x):
         #---------------Encoder-------------------------
         if x.size()[1] == 1:
-            x = x.repeat(1,3,1,1)
+            x = x.repeat(1, 3, 1, 1)
 
         bottleneck, skip_inputs, _, _ = self.backbone(x)
-        #bridge = self.bridge(encoder) #list
+        # bridge = self.bridge(encoder) #list
 
-        #b,c,_,_ = bridge[3].shape
+        # b,c,_,_ = bridge[3].shape
         # print(bridge[3].shape, bridge[2].shape,bridge[1].shape, bridge[0].shape)
-        #---------------Decoder-------------------------
+        # ---------------Decoder-------------------------
         # print("stage3-----")
-        #tmp_3 = self.decoder_3(bridge[3].permute(0,2,3,1).view(b,-1,c))
+        # tmp_3 = self.decoder_3(bridge[3].permute(0,2,3,1).view(b,-1,c))
         # print("stage2-----")
-        #tmp_2 = self.decoder_2(tmp_3, bridge[2].permute(0,2,3,1))
+        # tmp_2 = self.decoder_2(tmp_3, bridge[2].permute(0,2,3,1))
         # print("stage1-----")
-        #tmp_1 = self.decoder_1(tmp_2, bridge[1].permute(0,2,3,1))
+        # tmp_1 = self.decoder_1(tmp_2, bridge[1].permute(0,2,3,1))
         # print("stage0-----")
-        #tmp_0 = self.decoder_0(tmp_1, bridge[0].permute(0,2,3,1))
+        # tmp_0 = self.decoder_0(tmp_1, bridge[0].permute(0,2,3,1))
 
-        #modified decoder
-        x = self.decoder_4(x1 = bottleneck, x2= None)
+        # modified decoder
+        # x = self.decoder_4(x1 = bottleneck, x2= None)
 
-        x = self.decoder_3(x1 = x ,x2= skip_inputs[2])
+        # x = self.decoder_3(x1 = x ,x2= skip_inputs[2])
 
-        #x = dec3(x , inp1_1)
-        x = self.decoder_2(x1 = x ,x2= skip_inputs[1])
-        #x = dec4(x , inp0_1)
-        x = self.decoder_1(x1 = x ,x2= skip_inputs[0])
-        return x
+        # x = dec3(x , inp1_1)
+
+        # x = self.decoder_2(x1 = x ,x2= skip_inputs[1])
+
+        # x = dec4(x , inp0_1)
+        # x = self.decoder_1(x1 = x ,x2= skip_inputs[0])
+        x = self.decoder_1(x1=bottleneck, x2=skip_inputs[0])
+
+        return x, skip_inputs[0]
 
 if __name__ == "__main__":
-    tr_block_check = DATMixFFNTransformerBlock(dim=768, token_mlp='mix_skip', input_size=7)
-    inp = torch.randn(1, 768, 7, 7)
-    test_test = tr_block_check(inp)
-    # h2 = h.view(h.size(0), h.size(2)*h.size(3), h.size(1))
-    # h.view(h.size(0), N, h.size(1))
-    print(f'Dat mixffn transformer block output shape is: {test_test.shape}')
-    print('----------------------------------')
+    missu = MISSFormer3()
 
-    dec_4 = MyDecoderLayer(input_size=(7, 7), in_out_chan=(768, 768), heads=24, n_groups=48, is_first=True)
-    dec_3 = MyDecoderLayer(input_size=(14, 14), in_out_chan=(384, 384), heads=12, n_groups=24)
-    dec_2 = MyDecoderLayer(input_size=(28, 28), in_out_chan=(192, 192), heads=6, n_groups=12)
-    dec_1 = MyDecoderLayer(input_size=(56, 56), in_out_chan=(96, 96), heads=3, n_groups=6, is_last=True)
+    akharin = torch.randn(1, 3, 56, 56)
 
-    x1 = torch.randn(1, 768, 7, 7)
-    x2 = torch.randn(1, 384, 14, 14)
-    x3 = torch.randn(1, 192, 28, 28)
-    x4 = torch.randn(1, 96, 56, 56)
-
-    x1 = dec_4(x1, x2=None)
-    x2 = dec_3(x1, x2)
-    x3 = dec_2(x2, x3)
-    x4 = dec_1(x3, x4)
-    print(f'Each Layer of Decoder outputs (former layer + skip connection) shape is:\n {x1.shape}, {x2.shape}, {x3.shape}, {x4.shape}')
-
-
-    missdat_ushape = MISSFormer2()
-
-    inp2 = torch.randn(1, 3, 224, 224)
-
-    print(f'the main output of my U-shaped network is {missdat_ushape(inp2).shape}')
+    print(missu(akharin)[0].shape, missu(akharin)[1].shape)

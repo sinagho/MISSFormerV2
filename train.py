@@ -21,7 +21,7 @@ parser.add_argument('--list_dir', type=str,
                     default='./lists/lists_Synapse', help='list dir')
 
 parser.add_argument('--model_type', type=str,
-                    default='missformerv2', help='Choose your model type')
+                    default='missformerv3', help='Choose your model type')
 parser.add_argument('--num_classes', type=int,
                     default=9, help='output channel of network')
 parser.add_argument('--output_dir', type=str, 
@@ -103,6 +103,8 @@ if __name__ == "__main__":
         os.makedirs(args.output_dir)
 
     if model_type == 'missformerv2':
+        net = MISSFormer2(num_classes=args.num_classes).cuda(0)
+    if model_type == 'missformerv3':
         net = MISSFormer2(num_classes=args.num_classes).cuda(0)
     else:
         net = MISSFormer(num_classes=args.num_classes).cuda(0)
