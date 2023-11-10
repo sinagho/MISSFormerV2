@@ -69,6 +69,7 @@ def trainer_synapse(args, model, snapshot_path):
             loss_ce = ce_loss(outputs, label_batch[:].long())
             loss_dice = dice_loss(outputs, label_batch, softmax=True)
             loss = 0.4 * loss_ce + 0.6 * loss_dice
+            writer.add_scalars('losses', {'ce': loss_ce, 'loss_dice': loss_dice, 'loss': loss}, iter_num)
             # print("loss-----------", loss)
             optimizer.zero_grad()
             loss.backward()
