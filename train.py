@@ -8,7 +8,7 @@ import torch.backends.cudnn as cudnn
 # from networks.segformer import MySegFormer as ViT_seg
 from networks.MISSFormer import MISSFormer
 from networks.MissFormerV2 import MISSFormer2
-from networks.MISSFormerV3 import MISSFormer3, MISSFormer4
+from networks.MISSFormerV3 import MISSFormer3, MISSFormer4, MISSFormer5, MISSFormer6
 from trainer import trainer_synapse
 import warnings
 warnings.filterwarnings('ignore')
@@ -21,7 +21,7 @@ parser.add_argument('--dataset', type=str,
 parser.add_argument('--list_dir', type=str,
                     default='./lists/lists_Synapse', help='list dir')
 parser.add_argument('--model_type', type=str,
-                    default='missformerv4', help='Choose your model type')
+                    default='missformerv5', help='Choose your model type')
 parser.add_argument('--num_classes', type=int,
                     default=9, help='output channel of network')
 parser.add_argument('--output_dir', type=str, 
@@ -108,6 +108,10 @@ if __name__ == "__main__":
         net = MISSFormer3(num_classes=args.num_classes).cuda(0)
     elif model_type == 'missformerv4':
         net = MISSFormer4(num_classes=args.num_classes).cuda(0)
+    elif model_type == 'missformerv5':
+        net = MISSFormer5(num_classes=args.num_classes).cuda(0)
+    elif model_type == 'missformerv6':
+        net = MISSFormer6(num_classes=args.num_classes).cuda(0)
     else:
         net = MISSFormer(num_classes=args.num_classes).cuda(0)
 
