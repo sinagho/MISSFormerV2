@@ -102,15 +102,15 @@ if __name__ == "__main__":
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
 
-    if model_type == 'missformerv2':
+    if args.model_type == 'missformerv2':
         net = MISSFormer2(num_classes=args.num_classes).cuda(0)
-    elif model_type == 'missformerv3':
+    elif args.model_type == 'missformerv3':
         net = MISSFormer3(num_classes=args.num_classes).cuda(0)
-    elif model_type == 'missformerv4':
+    elif args.model_type == 'missformerv4':
         net = MISSFormer4(num_classes=args.num_classes).cuda(0)
-    elif model_type == 'missformerv5':
+    elif args. model_type == 'missformerv5':
         net = MISSFormer5(num_classes=args.num_classes).cuda(0)
-    elif model_type == 'missformerv6':
+    elif args.model_type == 'missformerv6':
         net = MISSFormer6(num_classes=args.num_classes).cuda(0)
     else:
         net = MISSFormer(num_classes=args.num_classes).cuda(0)
